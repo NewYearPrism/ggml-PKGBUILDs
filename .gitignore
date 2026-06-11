@@ -1,0 +1,17 @@
+# makepkg artifacts
+*/src/
+*/pkg/
+*.pkg.tar*
+*.src.tar*
+*.tar.gz
+*.tar.zst
+
+# generated metadata
+*/.SRCINFO
+
+# logs
+*.log
+*.log.*
+
+.version_cache.json
+*/PKGBUILD

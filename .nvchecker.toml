@@ -1,0 +1,13 @@
+["llama.cpp"]
+source = "git"
+git = "https://github.com/ggml-org/llama.cpp.git"
+include_regex = "b\\d+"
+
+["stable-diffusion.cpp"]
+source = "git"
+git = "https://github.com/leejet/stable-diffusion.cpp.git"
+include_regex = "master-\\d+-[0-9a-f]+"
+
+[ggml]
+source = "git"
+git = "https://github.com/ggml-org/ggml.git"
