@@ -21,7 +21,6 @@ makedepends=(
     cmake
     ninja
     git
-    cudnn
 )
 options=(
     lto
@@ -67,8 +66,6 @@ build() {
     -DGGML_NATIVE=OFF
     -DGGML_LTO=ON
     -DGGML_CUDA=ON
-    -DGGML_CUDA_NCCL=ON
-    -DGGML_CUDNN=ON
     -DGGML_CUDA_FA_ALL_QUANTS=ON
   )
 
