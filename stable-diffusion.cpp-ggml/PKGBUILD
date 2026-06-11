@@ -3,7 +3,7 @@
 _stable_diffusion_cpp_tag=master-685-19bdfe2
 _stable_diffusion_cpp_version=685
 _stable_diffusion_cpp_commit=${_stable_diffusion_cpp_tag##*-}
-_llama_cpp_version=9592
+_llama_cpp_version=9596
 _ggml_version=0.14.0
 _ggml_next_version=0.14.1
 _stable_diffusion_cpp_sha256sum=ea507d48eb3e1f88aab691e408438c4d9df5e229167d6726ee16b4b7e15b804d

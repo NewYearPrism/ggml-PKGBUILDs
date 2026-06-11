@@ -1,7 +1,7 @@
 {
   "llama_cpp": {
-    "version": "9592",
-    "sha256sum": "e1b0185afcae8ba4b94b28d4b271018afbbcdfa6b26b6fad5f5176d5f1b351c5"
+    "version": "9596",
+    "sha256sum": "c80caadf88a211c6d6e7820ded7258a6c2c0a476926a04dd7e8708ba3e552c93"
   },
   "stable_diffusion_cpp": {
     "tag": "master-685-19bdfe2",
