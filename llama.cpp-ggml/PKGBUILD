@@ -1,8 +1,8 @@
 # Maintainer: Misora
 
-_llama_cpp_version=@LLAMA_CPP_VERSION@
-_ggml_version=@GGML_VERSION@
-_llama_cpp_sha256sum=@SHA256SUM@
+_llama_cpp_version=9592
+_ggml_version=0.14.0
+_llama_cpp_sha256sum=e1b0185afcae8ba4b94b28d4b271018afbbcdfa6b26b6fad5f5176d5f1b351c5
 pkgname=llama.cpp-ggml
 pkgver=0.0.${_llama_cpp_version}
 pkgrel=1

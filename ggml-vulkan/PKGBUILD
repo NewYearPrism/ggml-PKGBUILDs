@@ -1,12 +1,12 @@
 # Maintainer: Misora
 
-_llama_cpp_version=@LLAMA_CPP_VERSION@
-_ggml_version=@GGML_VERSION@
-_llama_cpp_sha256sum=@SHA256SUM@
-pkgname=ggml-cpu
-pkgver=${_ggml_version}
-pkgrel=${_llama_cpp_version}
-pkgdesc='CPU backend plugin for ggml'
+_llama_cpp_version=9592
+_ggml_version=0.14.0
+_llama_cpp_sha256sum=e1b0185afcae8ba4b94b28d4b271018afbbcdfa6b26b6fad5f5176d5f1b351c5
+pkgname=ggml-vulkan
+pkgver=${_ggml_version}.b${_llama_cpp_version}
+pkgrel=1
+pkgdesc='Vulkan backend plugin for ggml'
 arch=(x86_64 aarch64)
 url='https://github.com/ggml-org/ggml'
 license=('MIT')
@@ -14,12 +14,15 @@ depends=(
     "ggml=${pkgver}"
     gcc-libs
     glibc
+    vulkan-icd-loader
 )
 makedepends=(
-    "ggml=${pkgver}-${_llama_cpp_version}"
     cmake
     ninja
     git
+    shaderc
+    spirv-headers
+    vulkan-headers
 )
 options=(
     lto
@@ -52,35 +55,26 @@ build() {
     -DGGML_BACKEND_DIR=/usr/lib/ggml/backends
     -DGGML_BUILD_TESTS=OFF
     -DGGML_BUILD_EXAMPLES=OFF
+    -DGGML_CPU=OFF
   )
 
   _cmake_options+=(
     -DGGML_NATIVE=OFF
     -DGGML_LTO=ON
+    -DGGML_VULKAN=ON
+    -DGGML_CUDA_FA_ALL_QUANTS=ON
   )
 
-  if [ "$GGML_CPU_ALL_VARIANTS" == 0 ]; then
-    _cmake_options+=(
-      -DGGML_CPU=ON
-    )
-  else
-    _cmake_options+=(
-      -DGGML_CPU_ALL_VARIANTS=ON
-    )
-  fi
-
-  if [[ -n "$GGML_CPU_BUILD_EXTRA_ARGS" ]]; then
-    msg2 "Applied custom CMake build args: $GGML_CPU_BUILD_EXTRA_ARGS"
-    _cmake_options+=($GGML_CPU_BUILD_EXTRA_ARGS)
+  if [[ -n "$GGML_VULKAN_BUILD_EXTRA_ARGS" ]]; then
+    msg2 "Applied custom CMake build args: $GGML_VULKAN_BUILD_EXTRA_ARGS"
+    _cmake_options+=($GGML_VULKAN_BUILD_EXTRA_ARGS)
   fi
 
   cmake "${_cmake_options[@]}"
 
-  cmake --build build --target ggml
+  cmake --build build --target ggml-vulkan
 }
 
 package() {
-  for lib in build/bin/libggml-cpu*.so; do
-    install -Dm755 "$lib" "${pkgdir}/usr/lib/ggml/backends/$(basename $lib)"
-  done
+  install -Dm755 build/bin/libggml-vulkan.so "${pkgdir}/usr/lib/ggml/backends/libggml-vulkan.so"
 }

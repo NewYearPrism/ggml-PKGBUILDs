@@ -1,29 +1,27 @@
 # Maintainer: Misora
 
-_llama_cpp_version=@LLAMA_CPP_VERSION@
-_ggml_version=@GGML_VERSION@
-_llama_cpp_sha256sum=@SHA256SUM@
-pkgname=ggml-vulkan
-pkgver=${_ggml_version}
-pkgrel=${_llama_cpp_version}
-pkgdesc='Vulkan backend plugin for ggml'
-arch=(x86_64 aarch64)
+_llama_cpp_version=9592
+_ggml_version=0.14.0
+_llama_cpp_sha256sum=e1b0185afcae8ba4b94b28d4b271018afbbcdfa6b26b6fad5f5176d5f1b351c5
+pkgname=ggml-cuda
+pkgver=${_ggml_version}.b${_llama_cpp_version}
+pkgrel=1
+pkgdesc='CUDA backend plugin for ggml'
+arch=(x86_64)
 url='https://github.com/ggml-org/ggml'
 license=('MIT')
 depends=(
     "ggml=${pkgver}"
+    cuda
     gcc-libs
     glibc
-    vulkan-icd-loader
 )
 makedepends=(
-    "ggml=${pkgver}-${_llama_cpp_version}"
+    "ggml=${pkgver}-${pkgrel}"
     cmake
     ninja
     git
-    shaderc
-    spirv-headers
-    vulkan-headers
+    cudnn
 )
 options=(
     lto
@@ -32,6 +30,7 @@ options=(
 
 build() {
   local _prefix_map="-ffile-prefix-map=${srcdir}/build=. -ffile-prefix-map=${srcdir}=."
+  local _cuda_prefix_map="-Xcompiler=-ffile-prefix-map=${srcdir}/build=. -Xcompiler=-ffile-prefix-map=${srcdir}=."
   CFLAGS+=" ${_prefix_map}"
   CXXFLAGS+=" ${_prefix_map}"
 
@@ -42,12 +41,17 @@ build() {
     -DCMAKE_BUILD_TYPE=Release
     -DCMAKE_C_FLAGS="${CFLAGS}"
     -DCMAKE_CXX_FLAGS="${CXXFLAGS}"
+    -DCMAKE_CUDA_FLAGS="${CUDAFLAGS} ${_cuda_prefix_map}"
     -DCMAKE_SKIP_RPATH=ON
     -DBUILD_SHARED_LIBS=ON
     -DCMAKE_INSTALL_PREFIX=/usr
     -DCMAKE_INSTALL_LIBDIR=lib
     -Wno-dev
   )
+
+  if [ -n "$CUDA_TARGETS" ]; then 
+    _cmake_options+=(-DCMAKE_CUDA_ARCHITECTURES=${CUDA_TARGETS})
+  fi
 
   _cmake_options+=(
     -DGGML_ALL_WARNINGS=OFF
@@ -62,20 +66,22 @@ build() {
   _cmake_options+=(
     -DGGML_NATIVE=OFF
     -DGGML_LTO=ON
-    -DGGML_VULKAN=ON
+    -DGGML_CUDA=ON
+    -DGGML_CUDA_NCCL=ON
+    -DGGML_CUDNN=ON
     -DGGML_CUDA_FA_ALL_QUANTS=ON
   )
 
-  if [[ -n "$GGML_VULKAN_BUILD_EXTRA_ARGS" ]]; then
-    msg2 "Applied custom CMake build args: $GGML_VULKAN_BUILD_EXTRA_ARGS"
-    _cmake_options+=($GGML_VULKAN_BUILD_EXTRA_ARGS)
+  if [[ -n "$GGML_CUDA_BUILD_EXTRA_ARGS" ]]; then
+    msg2 "Applied custom CMake build args: $GGML_CUDA_BUILD_EXTRA_ARGS"
+    _cmake_options+=($GGML_CUDA_BUILD_EXTRA_ARGS)
   fi
 
   cmake "${_cmake_options[@]}"
 
-  cmake --build build --target ggml-vulkan
+  cmake --build build --target ggml-cuda
 }
 
 package() {
-  install -Dm755 build/bin/libggml-vulkan.so "${pkgdir}/usr/lib/ggml/backends/libggml-vulkan.so"
+  install -Dm755 build/bin/libggml-cuda.so "${pkgdir}/usr/lib/ggml/backends/libggml-cuda.so"
 }
