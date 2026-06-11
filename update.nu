@@ -18,8 +18,10 @@ let llama_cpp_version = $versions | get "llama.cpp" | get 0 | str replace "b" ""
 let stable_diffusion_cpp_tag = $versions | get "stable-diffusion.cpp" | get 0;
 let stable_diffusion_cpp_version = $stable_diffusion_cpp_tag | parse --regex 'master-(?P<version>\d+)-[0-9a-f]+' | get version | get 0;
 let ggml_version = $versions | get "ggml" | get 0 | str replace "v" "";
+let ggml_version_parts = $ggml_version | parse --regex '^(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)$' | get 0;
+let ggml_next_version = $"($ggml_version_parts.major).($ggml_version_parts.minor).(($ggml_version_parts.patch | into int) + 1)";
 let sdcpp_webui_commit = git ls-remote https://github.com/leejet/sdcpp-webui.git refs/heads/master | split row (char tab) | get 0;
-print $"Found llama.cpp b($llama_cpp_version), ggml ($ggml_version), stable-diffusion.cpp ($stable_diffusion_cpp_tag), sdcpp-webui ($sdcpp_webui_commit)";
+print $"Found llama.cpp b($llama_cpp_version), ggml ($ggml_version), ggml upper bound ($ggml_next_version), stable-diffusion.cpp ($stable_diffusion_cpp_tag), sdcpp-webui ($sdcpp_webui_commit)";
 let cached = if ($vcache | path exists) { open $vcache } else { {} };
 let llama_cpp_cached = $cached | get --optional llama_cpp;
 let llama_cpp_entry = if ($llama_cpp_cached | get --optional version) != $llama_cpp_version {
@@ -67,6 +69,7 @@ for pkgbuild in $pkgbuilds {
     open $pkgbuild
     | str replace --regex '(?m)^_llama_cpp_version=.*$' $"_llama_cpp_version=($llama_cpp_version)"
     | str replace --regex '(?m)^_ggml_version=.*$' $"_ggml_version=($ggml_version)"
+    | str replace --regex '(?m)^_ggml_next_version=.*$' $"_ggml_next_version=($ggml_next_version)"
     | str replace --regex '(?m)^_llama_cpp_sha256sum=.*$' $"_llama_cpp_sha256sum=($sha256sum)"
     | str replace --regex '(?m)^_stable_diffusion_cpp_tag=.*$' $"_stable_diffusion_cpp_tag=($stable_diffusion_cpp_tag)"
     | str replace --regex '(?m)^_stable_diffusion_cpp_version=.*$' $"_stable_diffusion_cpp_version=($stable_diffusion_cpp_version)"

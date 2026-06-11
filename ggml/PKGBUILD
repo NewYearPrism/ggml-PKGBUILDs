@@ -1,4 +1,4 @@
-# Maintainer: Misora
+# Maintainer: NewYearPrism
 
 _llama_cpp_version=9592
 _ggml_version=0.14.0
@@ -11,8 +11,12 @@ arch=(x86_64 aarch64)
 url='https://github.com/ggml-org/ggml'
 license=('MIT')
 depends=(
-    gcc-libs
     glibc
+    libstdc++
+    libgcc
+    libgomp
+    python
+    python-yaml
 )
 makedepends=(
     cmake
@@ -21,8 +25,12 @@ makedepends=(
     patch
 )
 provides=(
-    libggml.so
-    libggml-base.so
+    libggml
+    ggml
+)
+conflicts=(
+    libggml
+    ggml
 )
 options=(
     lto
@@ -92,8 +100,8 @@ build() {
 package() {
   DESTDIR="${pkgdir}" cmake --install build
 
-  install -Dm644 llama.cpp/LICENSE "${pkgdir}/usr/share/licenses/ggml/LICENSE"
-  install -dm755 "${pkgdir}/usr/lib/ggml/backends/"
+  install -Dm644 llama.cpp/LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
   install -dm755 "${pkgdir}/usr/src/"
   cp -r llama.cpp/ggml "${pkgdir}/usr/src/ggml-${pkgver}"
+  ln -s "ggml-${pkgver}" "${pkgdir}/usr/src/ggml"
 }

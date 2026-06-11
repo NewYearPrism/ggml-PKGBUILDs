@@ -1,7 +1,8 @@
-# Maintainer: Misora
+# Maintainer: NewYearPrism
 
 _llama_cpp_version=9592
 _ggml_version=0.14.0
+_ggml_next_version=0.14.1
 _llama_cpp_sha256sum=e1b0185afcae8ba4b94b28d4b271018afbbcdfa6b26b6fad5f5176d5f1b351c5
 pkgname=ggml-cpu
 pkgver=${_ggml_version}.b${_llama_cpp_version}
@@ -11,12 +12,15 @@ arch=(x86_64 aarch64)
 url='https://github.com/ggml-org/ggml'
 license=('MIT')
 depends=(
-    "ggml=${pkgver}"
-    gcc-libs
+    "ggml>=${_ggml_version}.b9000"
+    "ggml<${_ggml_next_version}"
     glibc
+    libstdc++
+    libgcc
+    libgomp
 )
 makedepends=(
-    "ggml=${pkgver}-${pkgrel}"
+    "ggml=${pkgver}"
     cmake
     ninja
     git
@@ -32,7 +36,7 @@ build() {
   CXXFLAGS+=" ${_prefix_map}"
 
   local _cmake_options=(
-    -S /usr/src/ggml-${pkgver}
+    -S /usr/src/ggml
     -B build
     -G Ninja
     -DCMAKE_BUILD_TYPE=Release
@@ -83,4 +87,5 @@ package() {
   for lib in build/bin/libggml-cpu*.so; do
     install -Dm755 "$lib" "${pkgdir}/usr/lib/ggml/backends/$(basename $lib)"
   done
+  install -Dm644 "/usr/share/licenses/ggml/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }

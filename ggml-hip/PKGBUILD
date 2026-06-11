@@ -1,7 +1,8 @@
-# Maintainer: Misora
+# Maintainer: NewYearPrism
 
 _llama_cpp_version=9592
 _ggml_version=0.14.0
+_ggml_next_version=0.14.1
 _llama_cpp_sha256sum=e1b0185afcae8ba4b94b28d4b271018afbbcdfa6b26b6fad5f5176d5f1b351c5
 pkgname=ggml-hip
 pkgver=${_ggml_version}.b${_llama_cpp_version}
@@ -11,15 +12,16 @@ arch=(x86_64 aarch64)
 url='https://github.com/ggml-org/ggml'
 license=('MIT')
 depends=(
-    "ggml=${pkgver}"
-    gcc-libs
+    "ggml>=${_ggml_version}.b9000"
+    "ggml<${_ggml_next_version}"
     glibc
+    libgcc
     hip-runtime-amd
     hipblas
     rocblas
 )
 makedepends=(
-    "ggml=${pkgver}-${pkgrel}"
+    "ggml=${pkgver}"
     cmake
     ninja
     git
@@ -42,7 +44,7 @@ build() {
   HIPFLAGS+=" ${_prefix_map}"
 
   local _cmake_options=(
-    -S /usr/src/ggml-${pkgver}
+    -S /usr/src/ggml
     -B build
     -G Ninja
     -DCMAKE_BUILD_TYPE=Release
@@ -73,7 +75,6 @@ build() {
     -DGGML_LTO=ON
     -DGGML_HIP=ON
     -DGGML_HIP_GRAPHS=ON
-    -DGGML_HIP_RCCL=ON
     -DHIP_PLATFORM=amd
     -DGGML_CUDA_FA_ALL_QUANTS=ON
   )
@@ -90,4 +91,5 @@ build() {
 
 package() {
   install -Dm755 build/bin/libggml-hip.so "${pkgdir}/usr/lib/ggml/backends/libggml-hip.so"
+  install -Dm644 "/usr/share/licenses/ggml/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
