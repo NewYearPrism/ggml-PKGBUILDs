@@ -12,6 +12,7 @@ depends=(
     "ggml=${pkgver}"
     nvidia-utils
     cuda
+    nccl
     glibc
     libstdc++
     libgcc
@@ -22,7 +23,6 @@ makedepends=(
     ninja
     git
     cudnn
-    nccl
 )
 options=(
     lto
