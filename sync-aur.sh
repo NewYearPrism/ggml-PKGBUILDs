@@ -30,21 +30,18 @@ should_skip() {
   return 1
 }
 
-srcinfo_value() {
-  local key=$1
-  local line
-
-  while IFS= read -r line; do
-    line=${line#${line%%[![:space:]]*}}
-    if [[ $line == "$key = "* ]]; then
-      printf '%s\n' "${line#"$key = "}"
-      return 0
-    fi
-  done
-}
-
 require_command makepkg "Install pacman/base-devel first."
 require_command git "Install it with: sudo pacman -S git"
+
+repo_root=$(git -C "$script_dir" rev-parse --show-toplevel)
+repo_status=$(git -C "$repo_root" status --porcelain=v1 --untracked-files=all)
+if [[ -n $repo_status ]]; then
+  printf 'Error: source repository has uncommitted changes. Commit or stash them before syncing AUR repositories.\n' >&2
+  git -C "$repo_root" status --short >&2
+  exit 1
+fi
+
+commit_message=$(git -C "$repo_root" log -1 --format=%B)
 
 mkdir -p -- "$aur_root"
 
@@ -92,12 +89,8 @@ for pkgbuild in "${package_pkgbuilds[@]}"; do
     continue
   fi
 
-  pkgver=$(srcinfo_value pkgver <<<"$srcinfo")
-  pkgrel=$(srcinfo_value pkgrel <<<"$srcinfo")
-  commit_message="Update to ${pkgver}-${pkgrel}"
-
-  git -C "$aur_dir" commit -m "$commit_message"
-  printf '  Committed: %s\n' "$commit_message"
+  git -C "$aur_dir" commit -F - <<<"$commit_message"
+  printf '  Committed with source repository message: %s\n' "${commit_message%%$'\n'*}"
 done
 
 printf '\n==> Done. Review and push individual AUR repositories when ready.\n'

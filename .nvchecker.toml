@@ -11,3 +11,4 @@ include_regex = "master-\\d+-[0-9a-f]+"
 [ggml]
 source = "git"
 git = "https://github.com/ggml-org/ggml.git"
+include_regex = "v\\d+\\.\\d+\\.\\d+"
