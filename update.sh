@@ -78,6 +78,16 @@ replace_var() {
   perl -0pi -e "s/^\Q$name\E=.*$/$name=$value/m" "$file"
 }
 
+pkgbuild_value() {
+  local file=$1
+  local name=$2
+
+  bash --noprofile --norc -c '
+    source "$1"
+    printf "%s\n" "${!2-}"
+  ' bash "$file" "$name"
+}
+
 require_command nvchecker "Install it with: sudo pacman -S nvchecker"
 require_command git "Install it with: sudo pacman -S git"
 require_command curl "Install it with: sudo pacman -S curl"
@@ -179,6 +189,7 @@ printf 'Updating %d PKGBUILD files\n' "${#pkgbuilds[@]}"
 
 for pkgbuild in "${pkgbuilds[@]}"; do
   printf 'Updating %s\n' "$pkgbuild"
+  old_pkgver=$(pkgbuild_value "$pkgbuild" pkgver)
 
   if (( llama_cpp_updated )); then
     replace_var "$pkgbuild" _llama_cpp_version "$llama_cpp_version"
@@ -199,6 +210,12 @@ for pkgbuild in "${pkgbuilds[@]}"; do
   if (( sdcpp_webui_updated )); then
     replace_var "$pkgbuild" _sdcpp_webui_commit "$sdcpp_webui_commit"
     replace_var "$pkgbuild" _sdcpp_webui_sha256sum "$sdcpp_webui_sha256sum"
+  fi
+
+  new_pkgver=$(pkgbuild_value "$pkgbuild" pkgver)
+  if [[ $old_pkgver != "$new_pkgver" ]]; then
+    replace_var "$pkgbuild" pkgrel 1
+    printf '  Reset pkgrel to 1: pkgver changed from %s to %s\n' "$old_pkgver" "$new_pkgver"
   fi
 done
 
