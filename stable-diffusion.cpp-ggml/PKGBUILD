@@ -16,6 +16,7 @@ url='https://github.com/leejet/stable-diffusion.cpp'
 license=('MIT')
 depends=(
     "ggml=${_ggml_version}"
+    ggml-cpu
     glibc
     libstdc++
     libgcc

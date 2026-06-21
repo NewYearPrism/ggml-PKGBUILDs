@@ -12,6 +12,7 @@ url='https://github.com/ggml-org/llama.cpp'
 license=('MIT')
 depends=(
     "ggml=${_ggml_version}"
+    ggml-cpu
     glibc
     libstdc++
     libgcc
