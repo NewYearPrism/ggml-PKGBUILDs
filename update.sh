@@ -190,6 +190,7 @@ printf 'Updating %d PKGBUILD files\n' "${#pkgbuilds[@]}"
 for pkgbuild in "${pkgbuilds[@]}"; do
   printf 'Updating %s\n' "$pkgbuild"
   old_pkgver=$(pkgbuild_value "$pkgbuild" pkgver)
+  old_content=$(<"$pkgbuild")
 
   if (( llama_cpp_updated )); then
     replace_var "$pkgbuild" _llama_cpp_version "$llama_cpp_version"
@@ -213,9 +214,16 @@ for pkgbuild in "${pkgbuilds[@]}"; do
   fi
 
   new_pkgver=$(pkgbuild_value "$pkgbuild" pkgver)
+  new_content=$(<"$pkgbuild")
+
   if [[ $old_pkgver != "$new_pkgver" ]]; then
     replace_var "$pkgbuild" pkgrel 1
     printf '  Reset pkgrel to 1: pkgver changed from %s to %s\n' "$old_pkgver" "$new_pkgver"
+  elif [[ $old_content != "$new_content" ]]; then
+    old_pkgrel=$(pkgbuild_value "$pkgbuild" pkgrel)
+    new_pkgrel=$((old_pkgrel + 1))
+    replace_var "$pkgbuild" pkgrel "$new_pkgrel"
+    printf '  Bumped pkgrel to %s: dependency version changed but pkgver unchanged\n' "$new_pkgrel"
   fi
 done
 
