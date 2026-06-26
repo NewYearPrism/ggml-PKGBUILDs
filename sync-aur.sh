@@ -41,8 +41,6 @@ if [[ -n $repo_status ]]; then
   exit 1
 fi
 
-commit_message=$(git -C "$repo_root" log -1 --format=%B)
-
 mkdir -p -- "$aur_root"
 
 shopt -s nullglob
@@ -57,6 +55,8 @@ for pkgbuild in "${package_pkgbuilds[@]}"; do
   pkgname=$(basename -- "$package_dir")
   aur_dir="$aur_root/$pkgname"
   copied_files=()
+
+  commit_message=$(git -C "$repo_root" log -1 --format=%B -- "$pkgname/")
 
   printf '\n==> Syncing %s to %s\n' "$pkgname" "$aur_dir"
   mkdir -p -- "$aur_dir"
