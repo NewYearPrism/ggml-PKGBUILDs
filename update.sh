@@ -95,6 +95,14 @@ require_command sha256sum "Install coreutils."
 require_command jq "Install it with: sudo pacman -S jq"
 require_command perl "Install it with: sudo pacman -S perl"
 
+repo_root=$(git -C "$script_dir" rev-parse --show-toplevel)
+repo_status=$(git -C "$repo_root" status --porcelain=v1 --untracked-files=all)
+if [[ -n $repo_status ]]; then
+  printf 'Error: working tree has uncommitted or unstaged changes. Commit or stash them before running update.\n' >&2
+  git -C "$repo_root" status --short >&2
+  exit 1
+fi
+
 printf 'Checking upstream versions with %s\n' "$nvcfg"
 nvchecker_output=$(nvchecker -c "$nvcfg" --logger json)
 
@@ -226,5 +234,59 @@ for pkgbuild in "${pkgbuilds[@]}"; do
     printf '  Bumped pkgrel to %s: dependency version changed but pkgver unchanged\n' "$new_pkgrel"
   fi
 done
+
+# Build per-component message fragments for commit messages.
+build_commit_message() {
+  local pkgbuild=$1
+  local content
+  content=$(<"$pkgbuild")
+  local parts=()
+
+  if (( llama_cpp_updated )) && [[ $content == *'_llama_cpp_version'* ]]; then
+    parts+=("llama.cpp b$llama_cpp_version")
+  fi
+  if (( ggml_updated )) && [[ $content == *'_ggml_version'* ]]; then
+    parts+=("ggml $ggml_version")
+  fi
+  if (( stable_diffusion_cpp_updated )) && [[ $content == *'_stable_diffusion_cpp_version'* ]]; then
+    parts+=("stable-diffusion.cpp $stable_diffusion_cpp_tag")
+  fi
+  if (( sdcpp_webui_updated )) && [[ $content == *'_sdcpp_webui_commit'* ]]; then
+    parts+=("sdcpp-webui ${sdcpp_webui_commit:0:12}")
+  fi
+
+  local message=''
+  local part
+  for part in "${parts[@]}"; do
+    if [[ -z $message ]]; then
+      message=$part
+    else
+      message+=", $part"
+    fi
+  done
+
+  printf 'update to %s' "$message"
+}
+
+# Commit changes per package directory, then commit the version cache.
+shopt -s globstar nullglob
+for pkgbuild in "$script_dir"/**/PKGBUILD; do
+  if git -C "$repo_root" diff --quiet -- "$pkgbuild"; then
+    continue
+  fi
+  package_dir=$(dirname -- "$pkgbuild")
+  pkgname=$(basename -- "$package_dir")
+  commit_message=$(build_commit_message "$pkgbuild")
+
+  git -C "$repo_root" add -- "$pkgbuild"
+  git -C "$repo_root" commit -m "$commit_message" -- "$pkgbuild"
+  printf 'Committed %s: %s\n' "$pkgname" "$commit_message"
+done
+
+if ! git -C "$repo_root" diff --quiet -- "$vcache"; then
+  git -C "$repo_root" add -- "$vcache"
+  git -C "$repo_root" commit -m 'update version cache' -- "$vcache"
+  printf 'Committed version cache\n'
+fi
 
 printf 'Done. Regenerate .SRCINFO in each AUR package directory before publishing.\n'
