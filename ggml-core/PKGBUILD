@@ -2,7 +2,7 @@
 
 _ggml_version=0.15.3
 _ggml_sha256sum=86800455b5520fc86023979790703a9e2e1e4038b20039334be21df4d55bc868
-pkgname=(ggml ggml-src)
+pkgname=(ggml-core ggml-src)
 pkgver=${_ggml_version}
 pkgrel=1
 arch=(x86_64 aarch64)
@@ -75,8 +75,9 @@ build() {
   cmake --build build
 }
 
-package_ggml() {
-  pkgdesc='Tensor library for machine learning (API library)'
+package_ggml-core() {
+  pkgdesc='Tensor library for machine learning (core runtime)'
+  groups=(ggml)
   depends=(
     glibc
     libstdc++
@@ -84,14 +85,16 @@ package_ggml() {
   )
   provides=(
     "libggml=${pkgver}"
+    "ggml"
   )
   conflicts=(
     libggml
+    ggml
   )
 
   DESTDIR="${pkgdir}" cmake --install build
 
-  install -Dm644 ggml/LICENSE "${pkgdir}/usr/share/licenses/ggml/LICENSE"
+  install -Dm644 ggml/LICENSE "${pkgdir}/usr/share/licenses/ggml-core/LICENSE"
 }
 
 package_ggml-src() {

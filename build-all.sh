@@ -5,12 +5,12 @@ root_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 makepkg_args=(--syncdep --needed --clean --force)
 
 packages=(
-  ggml-cpu
-  ggml-cuda
-  ggml-hip
-  ggml-vulkan
-  llama.cpp-ggml
-  stable-diffusion.cpp-ggml
+  ggml-cpu-backend
+  ggml-cuda-backend
+  ggml-hip-backend
+  ggml-vulkan-backend
+  llama.cpp-system
+  stable-diffusion.cpp-system
 )
 
 build_package() {
@@ -21,13 +21,13 @@ build_package() {
   makepkg "${makepkg_args[@]}"
 }
 
-printf '==> Building and installing ggml\n'
-cd -- "$root_dir/ggml"
+printf '==> Building and installing ggml-core\n'
+cd -- "$root_dir/ggml-core"
 mapfile -t ggml_package_files < <(makepkg --packagelist)
 makepkg "${makepkg_args[@]}"
 
 if ((${#ggml_package_files[@]} == 0)); then
-  printf 'error: makepkg --packagelist returned no ggml package files\n' >&2
+  printf 'error: makepkg --packagelist returned no ggml-core package files\n' >&2
   exit 1
 fi
 
@@ -37,4 +37,4 @@ for package_dir in "${packages[@]}"; do
   build_package "$package_dir"
 done
 
-printf '\n==> Done. Built ggml and all dependent packages. Only ggml was installed.\n'
+printf '\n==> Done. Built ggml-core and all dependent packages. Only ggml-core was installed.\n'
