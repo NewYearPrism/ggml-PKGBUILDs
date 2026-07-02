@@ -2,16 +2,31 @@
 
 _ggml_version=0.15.3
 _ggml_sha256sum=86800455b5520fc86023979790703a9e2e1e4038b20039334be21df4d55bc868
-pkgname=(ggml-core ggml-src)
+pkgname=ggml-core
+pkgdesc='Tensor library for machine learning (core runtime)'
 pkgver=${_ggml_version}
 pkgrel=1
 arch=(x86_64 aarch64)
 url='https://github.com/ggml-org/ggml'
 license=('MIT')
+groups=(ggml)
+depends=(
+    glibc
+    libstdc++
+    libgcc
+)
 makedepends=(
     cmake
     ninja
     patch
+)
+provides=(
+    "libggml=${pkgver}"
+    "ggml=${pkgver}"
+)
+conflicts=(
+    libggml
+    ggml
 )
 options=(
     lto
@@ -76,43 +91,7 @@ build() {
 }
 
 package_ggml-core() {
-  pkgdesc='Tensor library for machine learning (core runtime)'
-  groups=(ggml)
-  depends=(
-    glibc
-    libstdc++
-    libgcc
-  )
-  provides=(
-    "libggml=${pkgver}"
-    "ggml"
-  )
-  conflicts=(
-    libggml
-    ggml
-  )
-
   DESTDIR="${pkgdir}" cmake --install build
 
   install -Dm644 ggml/LICENSE "${pkgdir}/usr/share/licenses/ggml-core/LICENSE"
-}
-
-package_ggml-src() {
-  pkgdesc='Tensor library for machine learning (source files)'
-  arch=(any)
-  depends=(
-    python
-    python-yaml
-  )
-
-  install -Dm644 ggml/LICENSE "${pkgdir}/usr/share/licenses/ggml-src/LICENSE"
-  install -dm755 "${pkgdir}/usr/src/ggml-${pkgver}"
-  cp -r "ggml-${pkgver}/README.md" "${pkgdir}/usr/src/ggml-${pkgver}/"
-  cp -r "ggml-${pkgver}/LICENSE" "${pkgdir}/usr/src/ggml-${pkgver}/"
-  cp -r "ggml-${pkgver}/CMakeLists.txt" "${pkgdir}/usr/src/ggml-${pkgver}/"
-  cp -r "ggml-${pkgver}/AUTHORS" "${pkgdir}/usr/src/ggml-${pkgver}/"
-  cp -r "ggml-${pkgver}/src" "${pkgdir}/usr/src/ggml-${pkgver}/"
-  cp -r "ggml-${pkgver}/include" "${pkgdir}/usr/src/ggml-${pkgver}/"
-  cp -r "ggml-${pkgver}/cmake" "${pkgdir}/usr/src/ggml-${pkgver}/"
-  cp -r "ggml-${pkgver}/ggml.pc.in" "${pkgdir}/usr/src/ggml-${pkgver}/"
 }

@@ -124,7 +124,7 @@ if [[ ! $ggml_version =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   exit 1
 fi
 
-sdcpp_webui_commit=$(git ls-remote https://github.com/leejet/sdcpp-webui.git refs/heads/master | cut -f 1)
+sdcpp_webui_commit=$(nvchecker_version "$nvchecker_output" "sdcpp-webui")
 
 printf 'Found llama.cpp b%s, ggml %s, stable-diffusion.cpp %s, sdcpp-webui %s\n' \
   "$llama_cpp_version" "$ggml_version" "$stable_diffusion_cpp_tag" "$sdcpp_webui_commit"

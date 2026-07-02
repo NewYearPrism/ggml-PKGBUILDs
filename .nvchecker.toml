@@ -12,3 +12,9 @@ include_regex = "master-\\d+-[0-9a-f]+"
 source = "git"
 git = "https://github.com/ggml-org/ggml.git"
 include_regex = "v\\d+\\.\\d+\\.\\d+"
+
+["sdcpp-webui"]
+source = "git"
+git = "https://github.com/leejet/sdcpp-webui.git"
+branch = "master"
+use_commit = true
