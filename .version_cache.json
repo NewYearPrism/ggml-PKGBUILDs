@@ -1,16 +1,16 @@
 {
   "llama_cpp": {
-    "version": "9859",
-    "sha256sum": "5d41eec5fe4bcdfe5a74c907380fa80fa145c791d1c323c5c1143a7e0fe4b5f8"
+    "version": "9860",
+    "sha256sum": "27f682ff344b185e045c199173efdffb82bb6fa0a27be5a90e2df305ba82eadf"
   },
   "ggml": {
     "version": "0.15.3",
     "sha256sum": "86800455b5520fc86023979790703a9e2e1e4038b20039334be21df4d55bc868"
   },
   "stable_diffusion_cpp": {
-    "tag": "master-743-3590aa8",
-    "version": "743",
-    "sha256sum": "02e8d5f4d70216972bd52313f86373e067eb2db6120dd6ea6a783713ce5d2caf"
+    "tag": "master-746-2574f59",
+    "version": "746",
+    "sha256sum": "edcdeeba87a343146c1ed805fe5ff39ca4688c7b524394aee0c857ae3a705f37"
   },
   "sdcpp_webui": {
     "commit": "c4bce3d6b3f236614cca21014f076083b7270ba8",
