@@ -66,29 +66,38 @@ for pkgbuild in "${package_pkgbuilds[@]}"; do
     git -C "$aur_dir" init
   fi
 
+  changed=0
   for file in "$package_dir"/*; do
     if should_skip "$file"; then
       continue
     fi
 
     name=$(basename -- "$file")
+    if [[ -f $aur_dir/$name ]] && cmp -s -- "$file" "$aur_dir/$name"; then
+      continue
+    fi
+
     cp -f -- "$file" "$aur_dir/$name"
     copied_files+=("$name")
     printf '  Copied %s\n' "$name"
+    changed=1
   done
 
   srcinfo=$(cd -- "$aur_dir" && makepkg --printsrcinfo)
-  printf '%s\n' "$srcinfo" >"$aur_dir/.SRCINFO"
-  printf '  Generated .SRCINFO\n'
+  if [[ -f $aur_dir/.SRCINFO ]] && cmp -s -- <(printf '%s\n' "$srcinfo") "$aur_dir/.SRCINFO"; then
+    :
+  else
+    printf '%s\n' "$srcinfo" >"$aur_dir/.SRCINFO"
+    printf '  Generated .SRCINFO\n'
+    changed=1
+  fi
 
-  git -C "$aur_dir" add -- "${copied_files[@]}" .SRCINFO
-
-  staged=$(git -C "$aur_dir" diff --cached --name-only)
-  if [[ -z $staged ]]; then
+  if ((changed == 0)); then
     printf '  No changes to commit\n'
     continue
   fi
 
+  git -C "$aur_dir" add -- "${copied_files[@]}" .SRCINFO
   git -C "$aur_dir" commit -F - <<<"$commit_message"
   printf '  Committed with source repository message: %s\n' "${commit_message%%$'\n'*}"
 done
