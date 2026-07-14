@@ -1,7 +1,7 @@
 {
   "llama_cpp": {
-    "version": "9977",
-    "sha256sum": "4ebfd8fdf34f6eff05abcd7db8e0a2e78ef87a05056651f01584a8dd7e1d2c98"
+    "version": "10002",
+    "sha256sum": "17036d5a3ba2ebf061f2802914780b3695e91759326d5d806833adf5fb562d71"
   },
   "ggml": {
     "version": "0.16.0",
