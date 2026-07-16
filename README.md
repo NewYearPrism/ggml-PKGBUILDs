@@ -7,6 +7,8 @@ This project aims to integrate ggml ecosystem into Arch Linux package system in 
 
 ## Usage
 
+### Stable series (from standalone [ggml](https://github.com/ggml-org/ggml) releases)
+
 ```
 # Run in unprivileged environment
 makepkg -iD ggml-core
@@ -14,6 +16,20 @@ makepkg -iD ggml-cpu-backend      # Required by llama.cpp
 makepkg -iD llama.cpp-system
 makepkg -iD ggml-cuda-backend     # for NVIDIA GPUs
 makepkg -iD ggml-hip-backend      # for AMD GPUs
+```
+
+### Bleeding-edge series (from [llama.cpp](https://github.com/ggml-org/llama.cpp) embedded ggml)
+
+The `-llama.cpp` suffixed packages use the more frequently updated ggml bundled
+inside the llama.cpp repository. They are drop-in replacements for the stable
+series and conflict with them — install one series or the other, not both.
+
+```
+makepkg -iD ggml-core-llama.cpp
+makepkg -iD ggml-cpu-backend-llama.cpp
+makepkg -iD ggml-cuda-backend-llama.cpp     # for NVIDIA GPUs
+makepkg -iD ggml-hip-backend-llama.cpp      # for AMD GPUs
+makepkg -iD ggml-vulkan-backend-llama.cpp
 ```
 
 ## Compile Options

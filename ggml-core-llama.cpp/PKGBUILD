@@ -1,15 +1,15 @@
 # Maintainer: NewYearPrism
 
-_ggml_version=0.16.0
-_ggml_sha256sum=8e1741cd44c036468ee2b8531343bbe1205bc26bc63b866030679cc5f28ec0bf
-pkgname=ggml-core
-pkgdesc='Tensor library for machine learning (core runtime)'
-pkgver=${_ggml_version}
+_llama_cpp_version=10002
+_llama_cpp_sha256sum=17036d5a3ba2ebf061f2802914780b3695e91759326d5d806833adf5fb562d71
+pkgname=ggml-core-llama.cpp
+pkgver=0.0.0.b${_llama_cpp_version}
 pkgrel=1
+pkgdesc='Tensor library for machine learning (core runtime, from llama.cpp)'
 arch=(x86_64 aarch64)
-url='https://github.com/ggml-org/ggml'
+url='https://github.com/ggml-org/llama.cpp'
 license=('MIT')
-groups=(ggml)
+groups=(ggml-llama.cpp)
 depends=(
     glibc
     libstdc++
@@ -21,10 +21,12 @@ makedepends=(
     patch
 )
 provides=(
+    ggml-core
     libggml
     ggml
 )
 conflicts=(
+    ggml-core
     libggml
     ggml
 )
@@ -33,17 +35,20 @@ options=(
     !debug
 )
 source=(
-    "ggml-${pkgver}.tar.gz::https://github.com/ggml-org/ggml/archive/refs/tags/v${pkgver}.tar.gz"
+    "llama.cpp-b${_llama_cpp_version}.tar.gz::https://github.com/ggml-org/llama.cpp/archive/refs/tags/b${_llama_cpp_version}.tar.gz"
     ggml-h-ggml-max-name-128.patch
+    ggml.pc.in
 )
 sha256sums=(
-    ${_ggml_sha256sum}
+    ${_llama_cpp_sha256sum}
     b3be0f6368ca8344e52e044f60dc81efb98e646e93ce3fe690f8d8b4750eb27a
+    4df038e6d2f345fb8a930cb76014fd6a9fdeb793a6fa3593f436fc29e0589eee
 )
 
 prepare() {
-  ln -sf "ggml-${pkgver}" ggml
-  patch -Np1 -d ggml -i $srcdir/ggml-h-ggml-max-name-128.patch
+  ln -sf "llama.cpp-b${_llama_cpp_version}" llama.cpp
+  cp "$srcdir/ggml.pc.in" llama.cpp/ggml/ggml.pc.in
+  patch -Np1 -d llama.cpp/ggml -i "$srcdir/ggml-h-ggml-max-name-128.patch"
 }
 
 build() {
@@ -52,7 +57,7 @@ build() {
   CXXFLAGS+=" ${_prefix_map}"
 
   local _cmake_options=(
-    -S ggml
+    -S llama.cpp/ggml
     -B build
     -G Ninja
     -DCMAKE_BUILD_TYPE=Release
@@ -90,8 +95,8 @@ build() {
   cmake --build build
 }
 
-package_ggml-core() {
+package() {
   DESTDIR="${pkgdir}" cmake --install build
 
-  install -Dm644 ggml/LICENSE "${pkgdir}/usr/share/licenses/ggml-core/LICENSE"
+  install -Dm644 llama.cpp/LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }

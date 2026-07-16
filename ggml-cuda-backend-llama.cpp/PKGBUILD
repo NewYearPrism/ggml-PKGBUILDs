@@ -1,17 +1,23 @@
 # Maintainer: NewYearPrism
 
-_ggml_version=0.16.0
-_ggml_sha256sum=8e1741cd44c036468ee2b8531343bbe1205bc26bc63b866030679cc5f28ec0bf
-pkgname=ggml-cuda-backend
-pkgver=${_ggml_version}
+_llama_cpp_version=10002
+_llama_cpp_sha256sum=17036d5a3ba2ebf061f2802914780b3695e91759326d5d806833adf5fb562d71
+pkgname=ggml-cuda-backend-llama.cpp
+pkgver=0.0.0.b${_llama_cpp_version}
 pkgrel=1
-pkgdesc='CUDA backend for ggml'
+pkgdesc='CUDA backend for ggml (from llama.cpp)'
 arch=(x86_64)
-url='https://github.com/ggml-org/ggml'
+url='https://github.com/ggml-org/llama.cpp'
 license=('MIT')
-provides=(ggml-acceleration)
+provides=(
+    ggml-cuda-backend
+    ggml-acceleration
+)
+conflicts=(
+    ggml-cuda-backend
+)
 depends=(
-    "ggml-core=${pkgver}"
+    "ggml-core-llama.cpp=${pkgver}"
     nvidia-utils
     cuda
     nccl
@@ -30,18 +36,18 @@ options=(
     !debug
 )
 source=(
-    "ggml-${_ggml_version}.tar.gz::https://github.com/ggml-org/ggml/archive/refs/tags/v${_ggml_version}.tar.gz"
+    "llama.cpp-b${_llama_cpp_version}.tar.gz::https://github.com/ggml-org/llama.cpp/archive/refs/tags/b${_llama_cpp_version}.tar.gz"
     ggml-use-system-base.patch
 )
 sha256sums=(
-    ${_ggml_sha256sum}
+    ${_llama_cpp_sha256sum}
     b5b80ba3647d207a653dee190461b92e3792b0c5c610549d2ef4f48de0ad8565
 )
 
 prepare() {
-  ln -sf "ggml-${_ggml_version}" ggml
-  patch -Np1 -d ggml -i "$srcdir/ggml-use-system-base.patch"
-  rm -rf ggml/include/
+  ln -sf "llama.cpp-b${_llama_cpp_version}" llama.cpp
+  patch -Np1 -d llama.cpp/ggml -i "$srcdir/ggml-use-system-base.patch"
+  rm -rf llama.cpp/ggml/include/
 }
 
 build() {
@@ -51,7 +57,7 @@ build() {
   CXXFLAGS+=" ${_prefix_map}"
 
   local _cmake_options=(
-    -S ggml
+    -S llama.cpp/ggml
     -B build
     -G Ninja
     -DCMAKE_BUILD_TYPE=Release
@@ -65,7 +71,7 @@ build() {
     -Wno-dev
   )
 
-  if [ -n "$CUDA_TARGETS" ]; then 
+  if [ -n "$CUDA_TARGETS" ]; then
     _cmake_options+=(-DCMAKE_CUDA_ARCHITECTURES=${CUDA_TARGETS})
   fi
 
@@ -101,5 +107,5 @@ build() {
 
 package() {
   DESTDIR="${pkgdir}" cmake --install build
-  install -Dm644 "ggml/LICENSE" "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+  install -Dm644 llama.cpp/LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
