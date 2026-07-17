@@ -32,8 +32,6 @@ packages=(
   ggml-cuda-backend
   ggml-hip-backend
   ggml-vulkan-backend
-  llama.cpp-system
-  stable-diffusion.cpp-system
 )
 
 packages_llamacpp=(
@@ -41,6 +39,10 @@ packages_llamacpp=(
   ggml-cuda-backend-llama.cpp
   ggml-hip-backend-llama.cpp
   ggml-vulkan-backend-llama.cpp
+)
+
+packages_apps=(
+  stable-diffusion.cpp-system
 )
 
 require_command() {
@@ -151,25 +153,68 @@ if [[ ! -d $chroot_dir/root ]]; then
   mkarchroot -C /usr/share/devtools/pacman.conf.d/extra.conf -M /usr/share/devtools/makepkg.conf.d/x86_64.conf "$chroot_dir/root" base-devel
 fi
 
-# --- Stable series (standalone ggml releases) ---
+# --- Libraries: stable series (standalone ggml releases) ---
 
+stable_install_args=()
 if build_core ggml-core; then
+  stable_install_args=("${install_args[@]}")
   for package_dir in "${packages[@]}"; do
-    build_package "$package_dir" "${install_args[@]}"
+    build_package "$package_dir" "${stable_install_args[@]}"
   done
 else
-  printf '\n==> Skipping stable-series dependents due to ggml-core failure\n'
+  printf '\n==> Skipping stable-series backends due to ggml-core failure\n'
 fi
 
-# --- Bleeding-edge series (llama.cpp embedded ggml) ---
+# --- Libraries: bleeding-edge series (llama.cpp embedded ggml) ---
 
+llamacpp_install_args=()
 if build_core ggml-core-llama.cpp; then
+  llamacpp_install_args=("${install_args[@]}")
   for package_dir in "${packages_llamacpp[@]}"; do
-    build_package "$package_dir" "${install_args[@]}"
+    build_package "$package_dir" "${llamacpp_install_args[@]}"
   done
 else
-  printf '\n==> Skipping llama.cpp-series dependents due to ggml-core-llama.cpp failure\n'
+  printf '\n==> Skipping llama.cpp-series backends due to ggml-core-llama.cpp failure\n'
 fi
+
+# --- Applications (built last) ---
+
+# stable-diffusion.cpp-system: depends on stable ggml-core only.
+for package_dir in "${packages_apps[@]}"; do
+  if ((${#stable_install_args[@]} > 0)); then
+    build_package "$package_dir" "${stable_install_args[@]}"
+  else
+    printf '\n==> Skipping %s: ggml-core was not built\n' "$package_dir"
+    failed_packages+=("$package_dir")
+  fi
+done
+
+# llama.cpp-system: build once against each ggml-core variant. When stable
+# ggml lags behind llama.cpp, the ggml-core build fails but the
+# ggml-core-llama.cpp build (which embeds a matching ggml) still succeeds.
+build_llamacpp_system() {
+  local label=$1
+  shift
+  local -a core_args=("$@")
+
+  if ((${#core_args[@]} == 0)); then
+    printf '\n==> Skipping llama.cpp-system (%s): core not built\n' "$label"
+    failed_packages+=("llama.cpp-system ($label)")
+    return 0
+  fi
+
+  printf '\n==> Building llama.cpp-system (%s)\n' "$label"
+  cd -- "$root_dir/llama.cpp-system"
+  if makechrootpkg "${chroot_args[@]}" "${core_args[@]}" -- "${makepkg_args[@]}"; then
+    return 0
+  fi
+  local rc=$?
+  printf '\n==> WARNING: building llama.cpp-system (%s) failed (exit %s)\n' "$label" "$rc" >&2
+  failed_packages+=("llama.cpp-system ($label)")
+}
+
+build_llamacpp_system 'ggml-core' "${stable_install_args[@]}"
+build_llamacpp_system 'ggml-core-llama.cpp' "${llamacpp_install_args[@]}"
 
 if ((${#failed_packages[@]} > 0)); then
   printf '\n==> Done with failures. Failed packages:\n' >&2
@@ -179,4 +224,4 @@ if ((${#failed_packages[@]} > 0)); then
   exit 1
 fi
 
-printf '\n==> Done. Built ggml-core, ggml-core-llama.cpp and all dependent packages in chroot.\n'
+printf '\n==> Done. Built ggml-core, ggml-core-llama.cpp, all backends and applications in chroot.\n'
