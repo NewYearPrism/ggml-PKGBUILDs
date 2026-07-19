@@ -1,7 +1,7 @@
 # Maintainer: NewYearPrism
 
-_llama_cpp_version=10054
-_llama_cpp_sha256sum=46bb57595adcebcc4a42f07267d901e337a3918381992cc03db3d2b0a29072ae
+_llama_cpp_version=10068
+_llama_cpp_sha256sum=192819ca7117147532f2c8d8938ab2fe9b25e872ea671a56be549ec30ea4f743
 pkgname=ggml-hip-backend-llama.cpp
 pkgver=0.0.0.b${_llama_cpp_version}
 pkgrel=1
