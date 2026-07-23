@@ -3,8 +3,8 @@ set -euo pipefail
 
 root_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 
-chroot_dir=${CHROOT_DIR:-/var/lib/archbuild/ggml}
-makepkg_args=(--needed --clean --force)
+chroot_dir=${CHROOT_DIR:-$HOME/chroot}
+makepkg_args=(--needed --clean)
 failed_packages=()
 
 # Environment variables forwarded into the chroot build.
