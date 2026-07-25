@@ -1,7 +1,7 @@
 # Maintainer: NewYearPrism
 
-_llama_cpp_version=10103
-_llama_cpp_sha256sum=5ebd4bb0c5cb52e502d2611a5f3ac66f954b2f4d48e655701f8fd8046e77dd1b
+_llama_cpp_version=10121
+_llama_cpp_sha256sum=40f0b9f19d0c6d6e0ac245c8ed6bd7455c08163c63b76748760216785227b16d
 pkgname=ggml-cuda-backend-llama.cpp
 pkgver=0.0.0.b${_llama_cpp_version}
 pkgrel=1
