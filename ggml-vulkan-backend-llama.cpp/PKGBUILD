@@ -42,7 +42,7 @@ source=(
 )
 sha256sums=(
     ${_llama_cpp_sha256sum}
-    b5b80ba3647d207a653dee190461b92e3792b0c5c610549d2ef4f48de0ad8565
+    78bb5e4a55846ac3627e7cb7c74ef28edd1e2b541b16c8189f2e4591953dea90
 )
 
 prepare() {
