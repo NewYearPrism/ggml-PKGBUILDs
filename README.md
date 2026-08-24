@@ -54,5 +54,3 @@ This project applies a few patches into original ggml.
   - Forbid any adjustment to the size of some array, avoiding potential ABI inconsistency.
   - Meet stable-diffusion.cpp's compiling requirement.
   - If it does harm to performance, please tell me.
-- ```ggml-*-backend/ggml-use-system-base.patch```
-  - Help reuse system ggml's headers and shared libraries.
