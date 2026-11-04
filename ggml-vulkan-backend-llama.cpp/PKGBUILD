@@ -1,9 +1,9 @@
 # Maintainer: NewYearPrism
 
-_llama_cpp_version=10819
-_llama_cpp_sha256sum=1c70b163f2783033311375102edabda4511038824c7d9db4833d4c71d0919588
-_ggml_version=0.23.0
-_ggml_sha256sum=ae3f37f599acc16e8213d728f66528c7ba7a9ff2d7cac09181ba1ab19adb445c
+_llama_cpp_version=12111
+_llama_cpp_sha256sum=b58c05970c877747cb92a1343234c873bc25fd57d26e24f9a6f21b86f56f8450
+_ggml_version=0.29.0
+_ggml_sha256sum=b08d30d6685c5c90908e38dc279439fcc662b3b3f5a38c7bb2b447a31642c0f6
 pkgname=ggml-vulkan-backend-llama.cpp
 pkgver=0.0.0.b${_llama_cpp_version}
 pkgrel=1
