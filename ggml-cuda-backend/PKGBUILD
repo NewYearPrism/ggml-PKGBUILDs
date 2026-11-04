@@ -80,7 +80,7 @@ build() {
     -DGGML_CUDA=ON
     -DGGML_CUDA_NCCL=ON
     -DGGML_CUDNN=ON
-    -DGGML_CUDA_FA_ALL_QUANTS=ON
+    -DGGML_CUDA_FA_QUANTS=all
   )
 
   if [[ -n "$GGML_CUDA_BUILD_EXTRA_ARGS" ]]; then

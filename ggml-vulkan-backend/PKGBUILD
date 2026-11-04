@@ -75,7 +75,7 @@ build() {
     -DGGML_NATIVE=OFF
     -DGGML_LTO=ON
     -DGGML_VULKAN=ON
-    -DGGML_CUDA_FA_ALL_QUANTS=ON
+    -DGGML_CUDA_FA_QUANTS=all
   )
 
   if [[ -n "$GGML_VULKAN_BUILD_EXTRA_ARGS" ]]; then
