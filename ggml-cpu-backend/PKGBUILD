@@ -1,7 +1,7 @@
 # Maintainer: NewYearPrism
 
-_ggml_version=0.23.0
-_ggml_sha256sum=ae3f37f599acc16e8213d728f66528c7ba7a9ff2d7cac09181ba1ab19adb445c
+_ggml_version=0.29.0
+_ggml_sha256sum=b08d30d6685c5c90908e38dc279439fcc662b3b3f5a38c7bb2b447a31642c0f6
 pkgname=ggml-cpu-backend
 pkgver=${_ggml_version}
 pkgrel=1
