@@ -1,7 +1,7 @@
 # Maintainer: NewYearPrism
 
-_llama_cpp_version=12111
-_llama_cpp_sha256sum=b58c05970c877747cb92a1343234c873bc25fd57d26e24f9a6f21b86f56f8450
+_llama_cpp_version=12202
+_llama_cpp_sha256sum=ef16039fd8cd2ad0e1d7e84c2c0fe015c4eff1b157b48c52c5a356b37cee2ee2
 pkgname=llama.cpp-system
 pkgver=0.0.0.b${_llama_cpp_version}
 pkgrel=1
