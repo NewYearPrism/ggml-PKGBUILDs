@@ -1,19 +1,19 @@
 {
   "llama_cpp": {
-    "version": "12202",
-    "sha256sum": "ef16039fd8cd2ad0e1d7e84c2c0fe015c4eff1b157b48c52c5a356b37cee2ee2"
+    "version": "12522",
+    "sha256sum": "adaa6829f2075bd28b0b048b02004e66134273c6861b3e32e4ce533022a63f5f"
   },
   "ggml": {
-    "version": "0.29.0",
-    "sha256sum": "b08d30d6685c5c90908e38dc279439fcc662b3b3f5a38c7bb2b447a31642c0f6"
+    "version": "1.0.0",
+    "sha256sum": "27de4df871da091112a1e4ea0e13be70f364af5da666c1246fb26fde2b21fac0"
   },
   "stable_diffusion_cpp": {
-    "tag": "master-1057-5f8c19f",
-    "version": "1057",
-    "sha256sum": "f0913e6cb803beceb7c8aafb3df1167861ff0b85cefa14e6779fcf172d80e23c"
+    "tag": "master-1106-532d2c1",
+    "version": "1106",
+    "sha256sum": "339886c28d9cb39cc1bb54feafce0d1b78f75a05921c4b33dc2687df4f1c8b16"
   },
   "sdcpp_webui": {
-    "commit": "514814435dfc76d03047b1164cdf99fbb3762004",
-    "sha256sum": "92aa9c0566c6f80e13bdfc3d78652aaa9aab8c54123573b91ac898909759e823"
+    "commit": "c870e1cf791d51f5ca9732ebfe0fd014b220d431",
+    "sha256sum": "e7dd3ba77a217346058a1757a359cae8e77ce71e1677a5f5efb56583560c0cc6"
   }
 }
